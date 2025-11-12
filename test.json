@@ -1,0 +1,8 @@
+{
+    "jsonrpc": "2.0",
+    "method": "tasks/get",
+    "params": {
+        "id": "fccedc3e-c656-4dc9-9b81-9b2e2f734d58"
+    },
+    "id": "1234"
+}
