@@ -1,0 +1,16 @@
+{
+  "name": "Director Agent",
+  "agent_type": "director",
+  "version": "0.0.1",
+  "description": "Central orchestrator that receives user input and coordinates between specialized agents",
+  "status": "active",
+  "endpoint_url": "http://localhost:8000/director/",
+  "system_prompt": null,
+  "uses_adk": false,
+  "adk_model_name": null,
+  "config": {
+    "orchestrates": ["Summarizer Agent", "Classifier Agent"],
+    "response_template": "Our behind-the-scenes bots formed the following conclusions:\n## Summary:\n{summarizer_response}\n## Label:\n{classifier_response}"
+  }
+}
+

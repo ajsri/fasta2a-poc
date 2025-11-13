@@ -1,0 +1,16 @@
+{
+  "name": "Summarizer Agent",
+  "agent_type": "summarizer",
+  "version": "0.0.1",
+  "description": "Summarizes input text using ADK with fallback to truncation",
+  "status": "active",
+  "endpoint_url": "http://localhost:8000/summarizer/",
+  "system_prompt": "You are a text summarization assistant. Your task is to create a concise summary of the given text. \nThe summary should:\n- Capture the main points and key information\n- Be clear and concise\n- Preserve important details\n- Be significantly shorter than the original text\n\nProvide only the summary without any additional commentary or labels.",
+  "uses_adk": true,
+  "adk_model_name": "oss-gpt",
+  "config": {
+    "fallback_length": 100,
+    "max_tokens": 256
+  }
+}
+

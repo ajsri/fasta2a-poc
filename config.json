@@ -1,0 +1,19 @@
+{
+  "model": {
+    "endpoint": "http://localhost:12434/engines/llama.cpp/v1/chat/completions",
+    "name": "ai/gpt-oss:latest",
+    "parameters": {
+      "temperature": 0.7,
+      "max_tokens": 512
+    }
+  },
+  "agents": {
+    "directory": "migrations/agents",
+    "load": [
+      "Summarizer Agent",
+      "Classifier Agent",
+      "Director Agent"
+    ]
+  }
+}
+

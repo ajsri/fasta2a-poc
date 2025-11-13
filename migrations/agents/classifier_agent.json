@@ -1,0 +1,19 @@
+{
+  "name": "Classifier Agent",
+  "agent_type": "classifier",
+  "version": "0.0.1",
+  "description": "Classifies input text using ADK with fallback to keyword matching",
+  "status": "active",
+  "endpoint_url": "http://localhost:8000/classifier/",
+  "system_prompt": "You are a text classification assistant. Your task is to classify the given text into one of these categories:\n- insurance: Text related to insurance claims, policies, coverage, etc.\n- medical: Text related to medical conditions, health issues, treatments, etc.\n- general: Any other text that doesn't fit the above categories\n\nRespond with ONLY the classification label (insurance, medical, or general) and nothing else.",
+  "uses_adk": true,
+  "adk_model_name": "oss-gpt",
+  "config": {
+    "categories": ["insurance", "medical", "general"],
+    "fallback_keywords": {
+      "insurance": ["claim", "insurance"],
+      "medical": ["heart", "medical", "condition"]
+    }
+  }
+}
+

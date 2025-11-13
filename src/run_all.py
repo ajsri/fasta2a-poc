@@ -1,30 +1,50 @@
 # run_all.py
-import asyncio
+"""Dynamically load and run agents from configuration."""
 import uvicorn
+from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
 from fastapi import FastAPI
-from src.summarizer_agent import app as summarizer_app
-from src.classifier_agent import app as classifier_app
-from src.director_agent import app as director_app
+from src.registry import create_db_and_tables
+from src.registry.api import router as registry_router
+from src.agents.factory import create_agents_from_config, get_agent_mount_path
 
-main_app = FastAPI()
 
-@main_app.on_event("startup")
-async def start_agents():
-    # Manually run each FastA2A startup hook (initialize TaskManager + Worker)
-    await summarizer_app.router.startup()
-    await classifier_app.router.startup()
-    await director_app.router.startup()
+# Create and mount agents dynamically (before lifespan)
+agents = create_agents_from_config()
 
-@main_app.on_event("shutdown")
-async def stop_agents():
-    await summarizer_app.router.shutdown()
-    await classifier_app.router.shutdown()
-    await director_app.router.shutdown()
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Combined lifespan for all agents."""
+    # Initialize database and create tables
+    create_db_and_tables()
+    
+    # Start all agents in parallel
+    if agents:
+        # Create context managers for all agent lifespans
+        from contextlib import AsyncExitStack
+        async with AsyncExitStack() as stack:
+            for agent_name, (agent_app, agent_lifespan) in agents.items():
+                await stack.enter_async_context(agent_lifespan(agent_app))
+            yield
+    else:
+        yield
 
-# Mount them AFTER startup handlers are defined
-main_app.mount("/summarizer", summarizer_app)
-main_app.mount("/classifier", classifier_app)
-main_app.mount("/director", director_app)
+
+main_app = FastAPI(lifespan=lifespan)
+
+# Mount agents
+for agent_name, (agent_app, _) in agents.items():
+    mount_path = get_agent_mount_path(agent_name)
+    main_app.mount(mount_path, agent_app)
+    print(f"📌 Mounted {agent_name} at {mount_path}")
+
+# Include registry API
+main_app.include_router(registry_router)
+
+# Export main_app for CLI
+__all__ = ["main_app"]
 
 if __name__ == "__main__":
+    # Allow direct execution for backwards compatibility
+    import uvicorn
     uvicorn.run(main_app, host="0.0.0.0", port=8000)

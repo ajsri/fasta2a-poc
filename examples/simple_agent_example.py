@@ -7,9 +7,7 @@ from fasta2a import FastA2A, Worker
 from fasta2a.broker import InMemoryBroker
 from fasta2a.schema import Artifact, Message, TaskIdParams, TaskSendParams, TextPart
 from fasta2a.storage import InMemoryStorage
-
-Context = list[Message]
-"""The shape of the context you store in the storage."""
+from src.core import Context
 
 
 class InMemoryWorker(Worker[Context]):
